@@ -1,4 +1,4 @@
-function []=MBSIWP(long, dt)
+function []=MTSIWND(long, dt)
 % clear all
 % clc
 % close all
@@ -138,81 +138,40 @@ KD = 1*eye(2);
 rd = [0;0];
 r = points(1,:).';
 
-p = 100;
-dp = p*dt; %T = pTs
+D = 10*eye(3);
 
-w1 = 1
-w2 = 2
 for i = 1:count
     disp(i)
     disp(count)
-    
-    if count - i < p
-        p = (count -i + 2);
-       dp = p*dt; 
-    end
-    
-    rdd1 = rdd0;
+    rdd = rdd0;
     if (i>count/2) 
-        rdd1 = -rdd1;
+        rdd = -rdd;
     end
        
-    rdd2 = rdd0;
-    if (i+p>count/2) 
-        rdd2 = -rdd2;
-    end
-    
-    
-    
-    J1 = eval(subs(J, [q1 q2 q3], q'));
-    J2 = eval(subs(J, [q1 q2 q3], (q + qd*dp)'));
-    
+
+    J_sub = eval(subs(J, [q1 q2 q3], q'));
     x = eval(subs(p_ee, [q1 q2 q3], q.')); %end effector position
-    xd = J1*qd; %end effector velocity
+    xd = J_sub*qd; %end effector velocity
     
-    Jd1 = eval(subs(Jd, [q1 q2 q3 qd1 qd2 qd3], vertcat(q,qd)'));  
+    Jd_sub = eval(subs(Jd, [q1 q2 q3 qd1 qd2 qd3], vertcat(q,qd)'));  
     
-    M1 = eval(subs(M, [q1 q2 q3], q.'));
-    M2 = eval(subs(M, [q1 q2 q3], (q + qd*dp).'));
-    
-    S1 = eval(subs(S, [q1 q2 q3 qd1 qd2 qd3], vertcat(q,qd)'));
-    S2 = eval(subs(S, [q1 q2 q3 qd1 qd2 qd3], vertcat(q + qd*dp,qd)'));
-    
-    h1 = Jd1*qd;
-    h2 = (J2 - J1)*qd/dp;
-    
-    
+    M_sub = eval(subs(M, [q1 q2 q3], q.'));
     n = eval(subs(C, [q1 q2 q3 qd1 qd2 qd3], vertcat(q,qd)'));
     
-    A = [
-        J1, zeros(size(J1));
-        J2 - J1, J2
-    ];
+    A = J_sub;
     
-    b = [
-        rdd1 - h1 + KD*(rd-xd) + KP*(r-x);
-        rdd2 - h2;
-    ];
+    R = inv(M_sub).'*n + inv(M_sub).'*D*M_sub*qd;
 
-    Q = [
-        w1*eye(3) + w2*dp^2*(S2.')*(M2^(-2))*S2, w2*dp*(S2.')*inv(M2);
-        w2*dp*(S2.')*inv(M2), w2*eye(3)
-    ];
-
-    R = [
-        w1*inv(M1).'*(S1*qd) + w2*dp*(S2.')*(M2^(-2))*S2*qd;
-        w2*inv(M2).'*(S2*qd)
-    ];
-
-
+    
+    b = (rdd - Jd_sub*qd) + KD*(rd-xd) + KP*(r-x);
+    Q = eye(3);
     Q_inv = inv(Q);
     pAq = Q_inv*(A.')*inv(A*Q_inv*(A.')) ;
-    
-    qdd = pAq*b - (eye(6) - pAq*A)*Q_inv*R; %#ok<*MINV>
-    
-    qdd = qdd(1:3);
-    ts(:, i) = M1*qdd + S1*qd;
 
+    
+    qdd = pAq*b - (eye(3) - pAq*A)*Q_inv*R; %#ok<*MINV>
+
+    ts(:, i) = M_sub*qdd + n;
     [q, qd] = update_robot(qdd, q, qd, dt);
     qs(:,i) = q;
     qds(:,i) = qd;
@@ -220,11 +179,11 @@ for i = 1:count
     xs(:,i) = x;
     xds(:,i) = xd;
     
-    r = r + rd*dt +rdd1*dt^2;
-    rd = rd + rdd1*dt;
+    r = r + rd*dt +rdd*dt^2;
+    rd = rd + rdd*dt;
     
     
 end
 
-save mats/MBSIWP.mat qs qds qdds ts 
+save mats/MTSIWND.mat qs qds qdds ts 
 end

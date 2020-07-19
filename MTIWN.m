@@ -1,6 +1,7 @@
-clear all
-clc
-close all
+function []=MTIWN(long, dt)
+% clear all
+% clc
+% close all
 
 syms q1 q2 q3 qd1 qd2 qd3 real
 
@@ -78,28 +79,27 @@ Jd = diff(J, q1)*qd1 + diff(J, q2)*qd2 + diff(J, q3)*qd3
 
 
 showdetails(robot)
+A = 1;
+rdd0 = [A;A]
 
-dt = 0.001
+if long == 1
+    l = 0.83
+else
+    l = 0.2
+end
+Sx = l;
+Sy = l;
 
-T = 1.8221
+T = sqrt(4*l/A);
 t = (0:dt:T)'; % Time
 count = length(t);
-
-% generate circle
-% center = [0 0 0];
-% radius = 0.4;
-% theta = t*(2*pi/t(end));
-% points = center + radius*[cos(theta) sin(theta) zeros(size(theta))];
-
 % generate line
 x1 = 1.4142
-x2 = x1 + 0.83
-Sx = x2 - x1
+x2 = x1 + Sx
 dx = Sx/count;
 xs = (x1:dx:x2)'
 y1 = -0.4142
-y2 = y1 + 0.83
-Sy = y2 - y1
+y2 = y1 + Sy
 dy = Sy/count;
 ys = (y1:dy:y2)'
 
@@ -127,7 +127,6 @@ qs = zeros(ndof, count);
 qds = zeros(ndof, count);
 qdds = zeros(ndof, count);
 ts = zeros(ndof, count);
-rdd0 = [4*Sx/(T^2);4*Sy/(T^2)]
 
 q = q0;
 qd = qd0;
@@ -185,36 +184,5 @@ for i = 1:count
     
 end
 
-figure
-show(robot,qs(:,1));
-view(2)
-ax = gca;
-ax.Projection = 'orthographic';
-hold on
-plot(points(:,1),points(:,2),'k')
-axis([0 2.5 -1.5 1])
-
-% framesPerSecond = count/T;
-% rate = rateControl(framesPerSecond);
-% for i = 1:count
-%     show(robot,qs(:,i),'PreservePlot',false);
-%     drawnow
-%     waitfor(rate);
-% end
-tmp = 0;
-for i = 1:count
-    if tmp == 0
-        show(robot,qs(:,i));
-    end
-    tmp = tmp+dt;
-    if tmp > T/20
-        tmp = 0;
-    end
+save mats/MTIWN.mat qs qds qdds ts 
 end
-
-figure
-tiledlayout(1,2)
-nexttile
-plot(sqrt(sum(qds.^2)))
-nexttile
-plot(sqrt(sum(ts.^2)))

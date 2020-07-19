@@ -1,4 +1,4 @@
-function []=MBSIWP(long, dt)
+function []=MBIWPD(long, dt)
 % clear all
 % clc
 % close all
@@ -143,6 +143,9 @@ dp = p*dt; %T = pTs
 
 w1 = 1
 w2 = 2
+
+D = 10*eye(3);
+
 for i = 1:count
     disp(i)
     disp(count)
@@ -195,15 +198,14 @@ for i = 1:count
     ];
 
     Q = [
-        w1*eye(3) + w2*dp^2*(S2.')*(M2^(-2))*S2, w2*dp*(S2.')*inv(M2);
-        w2*dp*(S2.')*inv(M2), w2*eye(3)
+        w1*M1 + w2*dp^2*((S2+D*M2).')*inv(M2)*(S2+D*M2), w2*dp*((S2+D*M2).');
+        w2*dp*((S2+D*M2).'), w2*M2
     ];
 
     R = [
-        w1*inv(M1).'*(S1*qd) + w2*dp*(S2.')*(M2^(-2))*S2*qd;
-        w2*inv(M2).'*(S2*qd)
+        w1*(S1+D*M1)*qd + w2*dp*((S2+D*M2).')*inv(M2)*(S2+D*M2)*qd;
+        w2*(S2+D*M2)*qd
     ];
-
 
     Q_inv = inv(Q);
     pAq = Q_inv*(A.')*inv(A*Q_inv*(A.')) ;
@@ -226,5 +228,5 @@ for i = 1:count
     
 end
 
-save mats/MBSIWP.mat qs qds qdds ts 
+save mats/MBIWPD.mat qs qds qdds ts 
 end

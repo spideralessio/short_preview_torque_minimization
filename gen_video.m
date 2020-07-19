@@ -1,10 +1,10 @@
-clear 
-clc
-close all
-plots = {'MTN', 'MBP', 'MTIWN', 'MBIWP', 'MTSIWN', 'MBSIWP'}
-dt = 0.001;
-T = 1.8221;
-t = 0:dt:T;
+function []=gen_video(long, dt, framesPerSecond)
+% clear all
+% clc
+% close all
+plots = {'MTN', 'MBP', 'MTIWN', 'MBIWP', 'MTSIWN', 'MBSIWP', 'MTND', 'MBPD', 'MTIWND', 'MBIWPD', 'MTSIWND', 'MBSIWPD'}
+long=1
+dt = 0.001
 L = 1
 robot = rigidBodyTree('DataFormat','column','MaxNumBodies',4);
 link1 = rigidBody('link1');
@@ -48,24 +48,36 @@ tool.Mass = 0;
 link3.Inertia =  [0 0 0 0 0 0];
 addBody(robot, tool, 'link3');
 
-count = length(t)
+A = 1;
+rdd0 = [A;A]
+
+if long == 1
+    l = 0.83
+else
+    l = 0.2
+end
+Sx = l;
+Sy = l;
+
+T = sqrt(4*l/A);
+t = (0:dt:T)'; % Time
+count = length(t);
+% generate line
 x1 = 1.4142
-x2 = x1 + 0.83
-Sx = x2 - x1
+x2 = x1 + Sx
 dx = Sx/count;
 xs = (x1:dx:x2)'
 y1 = -0.4142
-y2 = y1 + 0.83
-Sy = y2 - y1
+y2 = y1 + Sy
 dy = Sy/count;
 ys = (y1:dy:y2)'
-
+count = length(t);
 points = zeros(length(xs), 2);
 points(:,1) = xs;
-points(:,2) = ys;%*0 + 0.25;
+points(:,2) = ys;
 
 for i=1:length(plots)
-    load(join([plots{i}, '/data.mat']))
+    load(join(['mats/', plots{i}, '.mat']))
     figure
     show(robot,qs(:,1));
     view(2)
@@ -75,19 +87,38 @@ for i=1:length(plots)
     plot(points(:,1),points(:,2),'k')
     axis([0 2.5 -1.5 1])
 
-    framesPerSecond = 60;
     nframes = T*framesPerSecond;
     step = floor(count/nframes);
     rate = rateControl(framesPerSecond);
-    video = VideoWriter(plots{i});
+    video = VideoWriter(join(['imgs/', plots{i}]));
     video.FrameRate = framesPerSecond;
     open(video);
-    for i = 1:step:count
-        show(robot,qs(:,i),'PreservePlot',false);
+    for j = 1:step:count
+        show(robot,qs(:,j),'PreservePlot',false, 'Frames', 'off');
         drawnow
         waitfor(rate);
         frame = getframe(gcf);
         writeVideo(video,frame);
     end
     close(video)
+    
+    gfc = figure
+    show(robot,qs(:,1));
+    l = findall(gcf, 'Type', 'Text')
+    delete(l(1:3))
+    l = findall(gcf, 'Type', 'Line')
+    delete(l(1:3))
+    view(2)
+    ax = gca;
+    ax.Projection = 'orthographic';
+    hold on
+    plot(points(:,1),points(:,2),'k')
+    axis([0 2.5 -1.5 1])
+    for j = 1:floor(count/20):count
+        show(robot,qs(:,j),'PreservePlot',true, 'Frames', 'off');
+        drawnow
+    end
+    print(gcf, join(['imgs/rob_motion_',plots{i},'.png']),'-dpng', '-r150')
+end
+
 end
