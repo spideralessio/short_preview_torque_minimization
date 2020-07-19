@@ -1,10 +1,12 @@
-function []=MBIWP(long, dt)
-% clear all
-% clc
-% close all
+% function []=MBP(long, dt)
+clear all
+clc
+close all
 
 syms q1 q2 q3 qd1 qd2 qd3 real
 
+long=1
+dt=0.01
 
 robot = rigidBodyTree('DataFormat','column','MaxNumBodies',4);
 
@@ -106,7 +108,7 @@ ys = (y1:dy:y2)'
 
 points = zeros(length(xs), 2);
 points(:,1) = xs;
-points(:,2) = ys;%*0 + 0.25;
+points(:,2) = ys;
 
 
 qd0 = [0;0;0];
@@ -138,15 +140,19 @@ KD = 1*eye(2);
 rd = [0;0];
 r = points(1,:).';
 
-p = 100;
-dp = p*dt; %T = pTs
+
+ %T = pTs
+
+VMAX = A*(T/2)
 
 w1 = 1
 w2 = 1
 for i = 1:count
     disp(i)
     disp(count)
-    
+    factor = (abs(rd(1)) / VMAX )
+    p = 100*(1-factor) + 1
+    dp = p*dt;
     if count - i < p
         p = (count -i + 2);
        dp = p*dt; 
@@ -195,13 +201,13 @@ for i = 1:count
     ];
 
     Q = [
-        w1*M1 + w2*dp^2*(S2.')*inv(M2)*S2, w2*dp*(S2.');
-        w2*dp*(S2.'), w2*M2
+        w1*M1^2 + w2*dp^2*(S2.')*S2, w2*dp*(S2.')*M2;
+        w2*dp*(S2.')*M2, w2*M2^2
     ];
 
     R = [
-        w1*S1*qd + w2*dp*(S2.')*inv(M2)*S2*qd;
-        w2*S2*qd
+        w1*M1*S1*qd+w2*dp*(S2.')*S2*qd;
+        w2*M2*S2*qd
     ];
 
     Q_inv = inv(Q);
@@ -225,5 +231,5 @@ for i = 1:count
     
 end
 
-save mats/MBIWP.mat qs qds qdds ts 
-end
+save mats/RT.mat qs qds qdds ts 
+% end

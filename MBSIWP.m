@@ -142,7 +142,7 @@ p = 100;
 dp = p*dt; %T = pTs
 
 w1 = 1
-w2 = 2
+w2 = 1
 for i = 1:count
     disp(i)
     disp(count)

@@ -3,7 +3,9 @@ function []=gen_plot(long, dt)
 % clc
 % close all
 plots = {'MTN', 'MBP', 'MTIWN', 'MBIWP', 'MTSIWN', 'MBSIWP', 'MTND', 'MBPD', 'MTIWND', 'MBIWPD', 'MTSIWND', 'MBSIWPD'}
-
+plots = {'RT'}
+long=1
+dt=0.1
 
 gcf = figure
 
