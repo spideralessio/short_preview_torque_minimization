@@ -82,6 +82,26 @@ print(gcf, 'imgs/work.png','-dpng', '-r150')
 
 
 gcf = figure
+imp = zeros(1, length(plots))
+barplots = {'MTN', 'MTIWN', 'MTSIWN', 'MBP', 'MBIWP', 'MBSIWP', 'MTND', 'MTIWND', 'MTSIWND', 'MBPD', 'MBIWPD', 'MBSIWPD'}
+
+for i=1:length(barplots)
+    load(join(['mats/', barplots{i}, '.mat']))
+    disp(plots{i})
+    disp(sum(sum(abs(ts.*dt))))
+    imp(i) = sum(sum(abs(ts.*dt)));
+end
+imp = reshape(imp, 3, 4)
+bar(imp)
+le = legend({'Min Norm', 'Min Short Prev', 'Min Damped Norm', 'Min Damped Short Prev'}, 'Location', 'northwest')
+ylabel('Total Impulse [N s]')
+% set(le, 'Position', [0.4 0 0.2 0.05]);
+set(gca, 'xticklabel', {'||\tau||^2', '||\tau||^2_{M^{-1}}', '||\tau||^2_{M^{-2}}'})
+% xtickangle(gca, 45)
+% set(findall(gcf, 'Type', 'Line'), 'LineWidth', 2)
+print(gcf, 'imgs/impulse.png','-dpng', '-r150')
+
+gcf = figure
 legend(plots, 'Location', 'northwest')
 for j=1:3 
     %disp(j)

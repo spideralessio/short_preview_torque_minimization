@@ -3,8 +3,7 @@ function []=gen_video(long, dt, framesPerSecond)
 % clc
 % close all
 plots = {'MTN', 'MBP', 'MTIWN', 'MBIWP', 'MTSIWN', 'MBSIWP', 'MTND', 'MBPD', 'MTIWND', 'MBIWPD', 'MTSIWND', 'MBSIWPD'}
-long=1
-dt = 0.001
+
 L = 1
 robot = rigidBodyTree('DataFormat','column','MaxNumBodies',4);
 link1 = rigidBody('link1');
@@ -94,7 +93,7 @@ for i=1:length(plots)
     video.FrameRate = framesPerSecond;
     open(video);
     for j = 1:step:count
-        show(robot,qs(:,j),'PreservePlot',false, 'Frames', 'off');
+        show(robot,qs(:,j),'PreservePlot',false);
         drawnow
         waitfor(rate);
         frame = getframe(gcf);
@@ -104,9 +103,9 @@ for i=1:length(plots)
     
     gfc = figure
     show(robot,qs(:,1));
-    l = findall(gcf, 'Type', 'Text')
+    l = findall(gfc, 'Type', 'Text')
     delete(l(1:3))
-    l = findall(gcf, 'Type', 'Line')
+    l = findall(gfc, 'Type', 'Line')
     delete(l(1:3))
     view(2)
     ax = gca;
@@ -115,10 +114,10 @@ for i=1:length(plots)
     plot(points(:,1),points(:,2),'k')
     axis([0 2.5 -1.5 1])
     for j = 1:floor(count/20):count
-        show(robot,qs(:,j),'PreservePlot',true, 'Frames', 'off');
+        show(robot,qs(:,j),'PreservePlot',true);
         drawnow
     end
-    print(gcf, join(['imgs/rob_motion_',plots{i},'.png']),'-dpng', '-r150')
+    print(gfc, join(['imgs/rob_motion_',plots{i},'.png']),'-dpng', '-r150')
 end
 
 end
