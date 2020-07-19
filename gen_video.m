@@ -3,7 +3,10 @@ function []=gen_video(long, dt, framesPerSecond)
 % clc
 % close all
 plots = {'MTN', 'MBP', 'MTIWN', 'MBIWP', 'MTSIWN', 'MBSIWP', 'MTND', 'MBPD', 'MTIWND', 'MBIWPD', 'MTSIWND', 'MBSIWPD'}
-
+% plots = {'RT'}
+% long = 1
+% dt = 0.01
+% framesPerSecond = 15
 L = 1
 robot = rigidBodyTree('DataFormat','column','MaxNumBodies',4);
 link1 = rigidBody('link1');

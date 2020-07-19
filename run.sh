@@ -2,6 +2,7 @@ LONG=1
 DT=0.001
 FPS=60
 USE_CACHE=1
+P=100
 
 if [ $USE_CACHE -eq 1 ]; then
 	rm -rf imgs/*
@@ -10,31 +11,23 @@ if [ $USE_CACHE -eq 1 ]; then
 	rm -rf mats
 fi
 
+METHODS=('MTN' 'MTND' 'MBP' 'MBPD' 'MTIWN' 'MTIWND' 'MBIWP' 'MBIWPD' 'MTSIWN' 'MTSIWND' 'MBSIWP' 'MBSIWPD')
+LENGTH=${#METHODS[*]}
+START=0
+unset pids
+
 if [ $USE_CACHE -eq 0 ]; then
-    echo "MTN"
-    matlab -nodisplay -nosplash -r "MTN($LONG, $DT); exit(0)"
-    echo "MTND"
-    matlab -nodisplay -nosplash -r "MTND($LONG, $DT); exit(0)"
-    echo "MBP"
-    matlab -nodisplay -nosplash -r "MBP($LONG, $DT); exit(0)"
-    echo "MBPD"
-    matlab -nodisplay -nosplash -r "MBPD($LONG, $DT); exit(0)"
-    echo "MTIWN"
-    matlab -nodisplay -nosplash -r "MTIWN($LONG, $DT); exit(0)"
-    echo "MTIWND"
-    matlab -nodisplay -nosplash -r "MTIWND($LONG, $DT); exit(0)"
-    echo "MBIWP"
-    matlab -nodisplay -nosplash -r "MBIWP($LONG, $DT); exit(0)"
-    echo "MBIWPD"
-    matlab -nodisplay -nosplash -r "MBIWPD($LONG, $DT); exit(0)"
-    echo "MTSIWN"
-    matlab -nodisplay -nosplash -r "MTSIWN($LONG, $DT); exit(0)"
-    echo "MTSIWND"
-    matlab -nodisplay -nosplash -r "MTSIWND($LONG, $DT); exit(0)"
-    echo "MBSIWP"
-    matlab -nodisplay -nosplash -r "MBSIWP($LONG, $DT); exit(0)"
-    echo "MBSIWPD"
-    matlab -nodisplay -nosplash -r "MBSIWPD($LONG, $DT); exit(0)"
+    for (( i=$START; i<$LENGTH; i++ )); do
+        METHOD=${METHODS[$i]}
+        echo $METHOD
+        matlab -nodisplay -nosplash -r "$METHOD($LONG, $DT, $P); exit(0)" &
+        pids[${i}]=$!
+    done
+
+    # wait for all pids
+    for pid in ${pids[*]}; do
+        wait $pid
+    done
 else
 	mv mats_long mats
 fi
@@ -48,31 +41,19 @@ mkdir imgs
 mkdir mats
 
 LONG=0
+unset pids
 if [ $USE_CACHE -eq 0 ]; then
-    echo "MTN"
-    matlab -nodisplay -nosplash -r "MTN($LONG, $DT); exit(0)"
-    echo "MTND"
-    matlab -nodisplay -nosplash -r "MTND($LONG, $DT); exit(0)"
-    echo "MBP"
-    matlab -nodisplay -nosplash -r "MBP($LONG, $DT); exit(0)"
-    echo "MBPD"
-    matlab -nodisplay -nosplash -r "MBPD($LONG, $DT); exit(0)"
-    echo "MTIWN"
-    matlab -nodisplay -nosplash -r "MTIWN($LONG, $DT); exit(0)"
-    echo "MTIWND"
-    matlab -nodisplay -nosplash -r "MTIWND($LONG, $DT); exit(0)"
-    echo "MBIWP"
-    matlab -nodisplay -nosplash -r "MBIWP($LONG, $DT); exit(0)"
-    echo "MBIWPD"
-    matlab -nodisplay -nosplash -r "MBIWPD($LONG, $DT); exit(0)"
-    echo "MTSIWN"
-    matlab -nodisplay -nosplash -r "MTSIWN($LONG, $DT); exit(0)"
-    echo "MTSIWND"
-    matlab -nodisplay -nosplash -r "MTSIWND($LONG, $DT); exit(0)"
-    echo "MBSIWP"
-    matlab -nodisplay -nosplash -r "MBSIWP($LONG, $DT); exit(0)"
-    echo "MBSIWPD"
-    matlab -nodisplay -nosplash -r "MBSIWPD($LONG, $DT); exit(0)"
+    for (( i=$START; i<$LENGTH; i++ )); do
+        METHOD=${METHODS[$i]}
+        echo $METHOD
+        matlab -nodisplay -nosplash -r "$METHOD($LONG, $DT, $P); exit(0)" &
+        pids[${i}]=$!
+    done
+
+    # wait for all pids
+    for pid in ${pids[*]}; do
+        wait $pid
+    done
 else
 	rm -rf mats
 	mv mats_short mats
@@ -91,4 +72,8 @@ mv imgs_short imgs
 
 for img in "imgs/*/*.png"
 	do mogrify -trim +repage $img
+done
+
+for img in "imgs/*/*.avi"
+    do convert -quiet -delay 1 $img +map $img.gif
 done

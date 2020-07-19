@@ -1,4 +1,4 @@
-function []=MTND(long, dt)
+function []=MTND(long, dt, p)
 % clear all
 % clc
 % close all

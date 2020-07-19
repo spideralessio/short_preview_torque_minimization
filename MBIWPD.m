@@ -1,4 +1,4 @@
-function []=MBIWPD(long, dt)
+function []=MBIWPD(long, dt, p)
 % clear all
 % clc
 % close all
@@ -138,10 +138,10 @@ KD = 1*eye(2);
 rd = [0;0];
 r = points(1,:).';
 
-p = 100;
+w1 = 1
+
 dp = p*dt; %T = pTs
 
-w1 = 1
 w2 = 1
 
 D = 10*eye(3);

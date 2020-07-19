@@ -1,4 +1,4 @@
-function []=MTN(long, dt)
+function []=MTN(long, dt, p)
 % clear all
 % clc
 % close all

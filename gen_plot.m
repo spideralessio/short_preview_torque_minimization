@@ -1,16 +1,14 @@
-function []=gen_plot(long, dt)
+function []=gen_plot(long, dt, p)
 % clear all
 % clc
 % close all
 plots = {'MTN', 'MBP', 'MTIWN', 'MBIWP', 'MTSIWN', 'MBSIWP', 'MTND', 'MBPD', 'MTIWND', 'MBIWPD', 'MTSIWND', 'MBSIWPD'}
-plots = {'RT'}
-long=1
-dt=0.1
+% plots = {'MTN', 'MBP', 'MTIWN', 'MBIWP', 'MTSIWN', 'MBSIWP'}plots = {'MTN', 'MBP', 'MTIWN', 'MBIWP', 'MTSIWN', 'MBSIWP', 'MTND', 'MBPD', 'MTIWND', 'MBIWPD', 'MTSIWND', 'MBSIWPD'}
 
-gcf = figure
+% long=0
+% dt=0.001
 
-subplot(1,2,1)
-hold on
+
 
 
 A = 1;
@@ -21,6 +19,7 @@ if long == 1
 else
     l = 0.2
 end
+
 Sx = l;
 Sy = l;
 
@@ -37,6 +36,10 @@ y2 = y1 + Sy
 dy = Sy/count;
 ys = (y1:dy:y2)'
 
+gcf = figure
+plots = {'MTN', 'MBP', 'MTIWN', 'MBIWP', 'MTSIWN', 'MBSIWP'}
+subplot(1,2,1)
+hold on
 for i=1:length(plots)
     load(join(['mats/', plots{i}, '.mat']))
     plot(t, sqrt(sum(qds.^2)))
@@ -54,11 +57,49 @@ for i=1:length(plots)
 end
 xlabel('time')
 ylabel('torque norm')
+
+
 le = legend(plots, 'Orientation', 'horizontal')
 set(le, 'Position', [0.4 0 0.2 0.05]);
 set(gcf,'position',[100 100 1800 800])
 set(findall(gcf, 'Type', 'Line'), 'LineWidth', 2)
-print(gcf, 'imgs/vel_torque_plots.png','-dpng', '-r150')
+print(gcf, 'imgs/vel_torque_plots_nodamped.png','-dpng', '-r150')
+
+%----------------
+plots = {'MTND', 'MBPD', 'MTIWND', 'MBIWPD', 'MTSIWND', 'MBSIWPD'}
+gcf = figure
+
+subplot(1,2,1)
+hold on
+for i=1:length(plots)
+    load(join(['mats/', plots{i}, '.mat']))
+    plot(t, sqrt(sum(qds.^2)))
+end
+
+xlabel('time')
+ylabel('joint velocity norm')
+% legend(plots, 'Location', 'northwest')
+
+subplot(1,2,2)
+hold on
+for i=1:length(plots)
+    load(join(['mats/', plots{i}, '.mat']))
+    plot(t, sqrt(sum(ts.^2)))
+end
+xlabel('time')
+ylabel('torque norm')
+
+
+le = legend(plots, 'Orientation', 'horizontal')
+set(le, 'Position', [0.4 0 0.2 0.05]);
+set(gcf,'position',[100 100 1800 800])
+set(findall(gcf, 'Type', 'Line'), 'LineWidth', 2)
+print(gcf, 'imgs/vel_torque_plots_damp.png','-dpng', '-r150')
+
+%----------------
+
+plots = {'MTN', 'MBP', 'MTIWN', 'MBIWP', 'MTSIWN', 'MBSIWP', 'MTND', 'MBPD', 'MTIWND', 'MBIWPD', 'MTSIWND', 'MBSIWPD'}
+
 
 gcf = figure
 work = zeros(1, length(plots))
@@ -74,7 +115,11 @@ for i=1:length(barplots)
 end
 work = reshape(work, 3, 4)
 bar(work)
-le = legend({'Min Norm', 'Min Short Prev', 'Min Damped Norm', 'Min Damped Short Prev'}, 'Location', 'northeast')
+lep = 'northeast'
+if long == 0
+    lep = 'northwest'
+end
+le = legend({'Min Norm', 'Min Short Prev', 'Min Damped Norm', 'Min Damped Short Prev'}, 'Location', lep)
 ylabel('Total Work [N rad]')
 % set(le, 'Position', [0.4 0 0.2 0.05]);
 set(gca, 'xticklabel', {'||\tau||^2', '||\tau||^2_{M^{-1}}', '||\tau||^2_{M^{-2}}'})

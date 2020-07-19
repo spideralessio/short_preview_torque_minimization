@@ -1,4 +1,5 @@
-% function []=MBP(long, dt)
+% function []=MBP(w1 = 1
+(long, dt, p))
 clear all
 clc
 close all
@@ -6,7 +7,7 @@ close all
 syms q1 q2 q3 qd1 qd2 qd3 real
 
 long=1
-dt=0.01
+dt=0.001
 
 robot = rigidBodyTree('DataFormat','column','MaxNumBodies',4);
 
@@ -151,7 +152,8 @@ for i = 1:count
     disp(i)
     disp(count)
     factor = (abs(rd(1)) / VMAX )
-    p = 100*(1-factor) + 1
+%     p = 100*(1-factor) + 1
+    p=100
     dp = p*dt;
     if count - i < p
         p = (count -i + 2);

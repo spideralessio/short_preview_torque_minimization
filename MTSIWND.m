@@ -1,4 +1,4 @@
-function []=MTSIWND(long, dt)
+function []=MTSIWND(long, dt, p)
 % clear all
 % clc
 % close all
