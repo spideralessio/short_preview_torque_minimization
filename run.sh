@@ -74,6 +74,6 @@ for img in "imgs/*/*.png"
 	do mogrify -trim +repage $img
 done
 
-for img in "imgs/*/*.avi"
-    do convert -quiet -delay 1 $img +map $img.gif
-done
+# for img in "imgs/*/*.avi"
+#     do convert -quiet -delay 1 $img +map $img.gif
+# done

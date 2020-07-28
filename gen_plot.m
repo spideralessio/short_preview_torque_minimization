@@ -36,7 +36,7 @@ y2 = y1 + Sy
 dy = Sy/count;
 ys = (y1:dy:y2)'
 
-gcf = figure
+gcf = figure('DefaultAxesFontSize',18)
 plots = {'MTN', 'MBP', 'MTIWN', 'MBIWP', 'MTSIWN', 'MBSIWP'}
 subplot(1,2,1)
 hold on
@@ -67,7 +67,7 @@ print(gcf, 'imgs/vel_torque_plots_nodamped.png','-dpng', '-r150')
 
 %----------------
 plots = {'MTND', 'MBPD', 'MTIWND', 'MBIWPD', 'MTSIWND', 'MBSIWPD'}
-gcf = figure
+gcf = figure('DefaultAxesFontSize',18)
 
 subplot(1,2,1)
 hold on
@@ -101,7 +101,7 @@ print(gcf, 'imgs/vel_torque_plots_damp.png','-dpng', '-r150')
 plots = {'MTN', 'MBP', 'MTIWN', 'MBIWP', 'MTSIWN', 'MBSIWP', 'MTND', 'MBPD', 'MTIWND', 'MBIWPD', 'MTSIWND', 'MBSIWPD'}
 
 
-gcf = figure
+gcf = figure('DefaultAxesFontSize',18)
 work = zeros(1, length(plots))
 barplots = {'MTN', 'MTIWN', 'MTSIWN', 'MBP', 'MBIWP', 'MBSIWP', 'MTND', 'MTIWND', 'MTSIWND', 'MBPD', 'MBIWPD', 'MBSIWPD'}
 
@@ -128,7 +128,7 @@ set(gca, 'xticklabel', {'||\tau||^2', '||\tau||^2_{M^{-1}}', '||\tau||^2_{M^{-2}
 print(gcf, 'imgs/work.png','-dpng', '-r150')
 
 
-gcf = figure
+gcf = figure('DefaultAxesFontSize',18)
 imp = zeros(1, length(plots))
 barplots = {'MTN', 'MTIWN', 'MTSIWN', 'MBP', 'MBIWP', 'MBSIWP', 'MTND', 'MTIWND', 'MTSIWND', 'MBPD', 'MBIWPD', 'MBSIWPD'}
 
@@ -148,7 +148,7 @@ set(gca, 'xticklabel', {'||\tau||^2', '||\tau||^2_{M^{-1}}', '||\tau||^2_{M^{-2}
 % set(findall(gcf, 'Type', 'Line'), 'LineWidth', 2)
 print(gcf, 'imgs/impulse.png','-dpng', '-r150')
 
-gcf = figure
+gcf = figure('DefaultAxesFontSize',18)
 legend(plots, 'Location', 'northwest')
 for j=1:3 
     %disp(j)
@@ -190,7 +190,7 @@ for j=1:3
 end
 le = legend(plots, 'Orientation', 'horizontal')
 set(le, 'Position', [0.4 0 0.2 0.05]);
-set(gcf,'position',[100 100 1200 800])
+set(gcf,'position',[100 100 1400 800])
 set(findall(gcf, 'Type', 'Line'), 'LineWidth', 2)
 print(gcf, 'imgs/joints_plots.png','-dpng', '-r150')
 end
